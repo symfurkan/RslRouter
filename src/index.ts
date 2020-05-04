@@ -64,3 +64,5 @@ export class RslRouter {
     this.check();
   }
 }
+
+export default RslRouter;
