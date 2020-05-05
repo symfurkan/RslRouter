@@ -1,10 +1,10 @@
 export interface IRoutes {
   path: string;
-  callback: (params: string[]) => void;
+  callback?: (params: string[]) => void;
+  lifecycle?: RslRouterLifecycle;
 }
 
 export interface IRouteResult {}
-
 
 export class RslRouter {
   static instance?: RslRouter;
@@ -40,17 +40,31 @@ export class RslRouter {
         route.path.replace(/:[^\s/]+/g, "([\\w-]+)")
       );
       const condition = this.#active.match(routeMatcher);
-      if (condition) {
+      if (condition && route.callback) {
         route.callback(condition);
+      }
+      if (route.lifecycle) {
+        for(const action of route.lifecycle.serialize()){
+          action("daha hazır değil");
+        }
       }
     }
   }
 
+  public addRoute(path: string) {
+    const route = {
+      path: path,
+      lifecycle: new RslRouterLifecycle(),
+    };
+    this.#routes.push(route);
+  }
+
   /**
    * Router hangi URL geldiğinde hangi callback çalışacak bu metod ile belirlenir.
+   * Toplu Route eklemek için kullanılır.
    * @param r path ve callback bulunan obje array olarak yerleştirilir
    */
-  public addRoute(r: IRoutes[]) {
+  public addRoutes(r: IRoutes[]) {
     this.#routes.push(...r);
   }
 
@@ -65,4 +79,27 @@ export class RslRouter {
   }
 }
 
+// Daha sonra burası ayrı bir paket haline getirilecek.
+export type TLifecycle = (params: any) => void;
+export class RslRouterLifecycle {
+  #router: RslRouter = RslRouter.connect();
+  #lifecycles: TLifecycle[] = [];
+  constructor() {}
+  public then(callback: TLifecycle) {
+    this.#lifecycles.push(callback);
+    return this;
+  }
+
+  public finaly() {
+    //TODO
+  }
+  public catch() {
+    //TODO
+  }
+
+  public serialize() {
+    return this.#lifecycles;
+  }
+}
+// {END} Daha sonra burası ayrı bir paket haline getirilecek.
 export default RslRouter;
