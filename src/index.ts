@@ -57,6 +57,7 @@ export class RslRouter {
       lifecycle: new RslRouterLifecycle(),
     };
     this.#routes.push(route);
+    return route.lifecycle;
   }
 
   /**
@@ -77,6 +78,12 @@ export class RslRouter {
     globalThis.history.pushState("", "", path);
     this.check();
   }
+
+
+
+  public current(){
+    return this.#active;
+  }
 }
 
 // Daha sonra burası ayrı bir paket haline getirilecek.
@@ -95,6 +102,10 @@ export class RslRouterLifecycle {
   }
   public catch() {
     //TODO
+  }
+
+  public leave(){
+    //TODO route değiştiğinde çalışacak.
   }
 
   public serialize() {

@@ -7,7 +7,7 @@
       "noImplicitAny": true,
       "module": "esnext",
       "moduleResolution": "node",
-      "target": "esnext",
+      "target": "es2020",
       "allowJs": true,
       "declaration": true,
   },
